@@ -126,6 +126,9 @@ zfsdev_release(struct inode *ino, struct file *filp)
 	return (0);
 }
 
+// 提供用户层访问接口
+// cmd 操作地址
+// arg 数据地址
 static long
 zfsdev_ioctl(struct file *filp, unsigned cmd, unsigned long arg)
 {
@@ -135,17 +138,22 @@ zfsdev_ioctl(struct file *filp, unsigned cmd, unsigned long arg)
 
 	vecnum = cmd - ZFS_IOC_FIRST;
 
+	// 分配 cmd_t 内存空间
 	zc = vmem_zalloc(sizeof (zfs_cmd_t), KM_SLEEP);
 
+	// 用户空间到内核空间
 	if (ddi_copyin((void *)(uintptr_t)arg, zc, sizeof (zfs_cmd_t), 0)) {
 		error = -SET_ERROR(EFAULT);
 		goto out;
 	}
+	// 执行对应 ioctl
 	error = -zfsdev_ioctl_common(vecnum, zc, 0);
+	// 内核空间到用户空间
 	rc = ddi_copyout(zc, (void *)(uintptr_t)arg, sizeof (zfs_cmd_t), 0);
 	if (error == 0 && rc != 0)
 		error = -SET_ERROR(EFAULT);
 out:
+	// 释放已分配内存
 	vmem_free(zc, sizeof (zfs_cmd_t));
 	return (error);
 
@@ -227,14 +235,17 @@ zfsdev_compat_ioctl(struct file *filp, unsigned cmd, unsigned long arg)
 #define	zfsdev_compat_ioctl	NULL
 #endif
 
+// /dev/zfs 混杂设备文件操作集
 static const struct file_operations zfsdev_fops = {
 	.open		= zfsdev_open,
 	.release	= zfsdev_release,
+	// 提供用户层与内核交互方式
 	.unlocked_ioctl	= zfsdev_ioctl,
 	.compat_ioctl	= zfsdev_compat_ioctl,
 	.owner		= THIS_MODULE,
 };
 
+// /dev/zfs 混杂设备注册
 static struct miscdevice zfs_misc = {
 	.minor		= ZFS_DEVICE_MINOR,
 	.name		= ZFS_DRIVER,
@@ -326,6 +337,9 @@ openzfs_fini_os(void)
 extern int __init zcommon_init(void);
 extern void zcommon_fini(void);
 
+/*
+ * openzfs 初始化
+ */
 static int __init
 openzfs_init(void)
 {
@@ -360,6 +374,9 @@ openzfs_fini(void)
 }
 
 #if defined(_KERNEL)
+/*
+ * module 注册
+ */
 module_init(openzfs_init);
 module_exit(openzfs_fini);
 #endif

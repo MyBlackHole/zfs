@@ -91,6 +91,9 @@ libzfs_error_init(int error)
  * Environment variables:
  * - ZFS_MODULE_TIMEOUT="<seconds>" - Seconds to wait for ZFS_DEV,
  *                                    defaults to 10, max. 10 min.
+ *
+ * 模块载入
+ *
  */
 int
 libzfs_load_module(void)
@@ -98,7 +101,9 @@ libzfs_load_module(void)
 	if (access(ZFS_DEV, F_OK) == 0)
 		return (0);
 
+	// 检查 zfs sysfs 可以访问
 	if (access(ZFS_SYSFS_DIR, F_OK) != 0) {
+		// 不存在载入 zfs mod
 		char *argv[] = {(char *)"modprobe", (char *)"zfs", NULL};
 		if (libzfs_run_process("modprobe", argv, 0))
 			return (ENOEXEC);
@@ -110,12 +115,15 @@ libzfs_load_module(void)
 	const char *timeout_str = getenv("ZFS_MODULE_TIMEOUT");
 	int seconds = 10;
 	if (timeout_str)
+		// str to long
 		seconds = MIN(strtol(timeout_str, NULL, 0), 600);
 	struct itimerspec timeout = {.it_value.tv_sec = MAX(seconds, 0)};
 
+	// 创建监控实例
 	int ino = inotify_init1(IN_CLOEXEC);
 	if (ino == -1)
 		return (ENOENT);
+	// 添加监控 /dev 创建事件
 	inotify_add_watch(ino, ZFS_DEVDIR, IN_CREATE);
 
 	if (access(ZFS_DEV, F_OK) == 0) {

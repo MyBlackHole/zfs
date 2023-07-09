@@ -3695,6 +3695,9 @@ zfs_create_ancestors(libzfs_handle_t *hdl, const char *path)
 
 /*
  * Create a new filesystem or volume.
+ *
+ * 创建文件系统或卷
+ *
  */
 int
 zfs_create(libzfs_handle_t *hdl, const char *path, zfs_type_t type,
@@ -3819,6 +3822,7 @@ zfs_create(libzfs_handle_t *hdl, const char *path, zfs_type_t type,
 	}
 
 	/* create the dataset */
+	// 创建数据集
 	ret = lzc_create(path, ost, props, wkeydata, wkeylen);
 	nvlist_free(props);
 	if (wkeydata != NULL)

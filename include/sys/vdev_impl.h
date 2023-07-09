@@ -225,6 +225,9 @@ typedef struct vdev_indirect_config {
 
 /*
  * Virtual device descriptor
+ *
+ * 虚拟设备目标结构
+ *
  */
 struct vdev {
 	/*

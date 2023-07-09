@@ -402,6 +402,9 @@ mountpoint_namecheck(const char *path, namecheck_err_t *why)
  * that cannot be used.
  *
  * Returns 0 on success, -1 on error.
+ *
+ * 数据池名称规范
+ *
  */
 int
 pool_namecheck(const char *pool, namecheck_err_t *why, char *what)

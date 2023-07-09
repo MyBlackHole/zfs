@@ -1356,6 +1356,7 @@ zap_update(objset_t *os, uint64_t zapobj, const char *name,
 	zap_t *zap;
 	const uint64_t *intval = val;
 
+	// 加锁
 	int err =
 	    zap_lockdir(os, zapobj, tx, RW_WRITER, TRUE, TRUE, FTAG, &zap);
 	if (err != 0)
@@ -1392,6 +1393,7 @@ zap_update(objset_t *os, uint64_t zapobj, const char *name,
 	ASSERT(zap == zn->zn_zap);
 	zap_name_free(zn);
 	if (zap != NULL)	/* may be NULL if fzap_upgrade() failed */
+		// 解锁
 		zap_unlockdir(zap, FTAG);
 	return (err);
 }

@@ -7741,6 +7741,7 @@ zfs_do_unshare(int argc, char **argv)
 	return (unshare_unmount(OP_SHARE, argc, argv));
 }
 
+// 查找 com 在 command_table 的下标
 static int
 find_command_idx(const char *command, int *idx)
 {
@@ -8732,6 +8733,7 @@ main(int argc, char **argv)
 	const char *cmdname;
 	char **newargv;
 
+	// 国际化
 	(void) setlocale(LC_ALL, "");
 	(void) setlocale(LC_NUMERIC, "C");
 	(void) textdomain(TEXT_DOMAIN);
@@ -8748,6 +8750,11 @@ main(int argc, char **argv)
 
 	cmdname = argv[1];
 
+	/*
+	 *
+	 * 转换字符串
+	 *
+	 */
 	/*
 	 * The 'umount' command is an alias for 'unmount'
 	 */
@@ -8779,13 +8786,16 @@ main(int argc, char **argv)
 	if ((strcmp(cmdname, "-V") == 0) || (strcmp(cmdname, "--version") == 0))
 		return (zfs_do_version(argc, argv));
 
+	// 初始化 zfs 环境
 	if ((g_zfs = libzfs_init()) == NULL) {
 		(void) fprintf(stderr, "%s\n", libzfs_error_init(errno));
 		return (1);
 	}
 
+	// 保存参数
 	zfs_save_arguments(argc, argv, history_str, sizeof (history_str));
 
+	// 启用异常打印
 	libzfs_print_on_error(g_zfs, B_TRUE);
 
 	zfs_setproctitle_init(argc, argv, environ);
@@ -8801,6 +8811,9 @@ main(int argc, char **argv)
 
 	/*
 	 * Run the appropriate command.
+	 *
+	 * 查找命令映射的方法
+	 *
 	 */
 	libzfs_mnttab_cache(g_zfs, B_TRUE);
 	if (find_command_idx(cmdname, &i) == 0) {

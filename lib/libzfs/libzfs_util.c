@@ -968,6 +968,9 @@ libzfs_run_process_impl(const char *path, char *argv[], char *env[], int flags,
 	return (-1);
 }
 
+/*
+ * 执行程序
+ */
 int
 libzfs_run_process(const char *path, char *argv[], int flags)
 {
@@ -1034,6 +1037,7 @@ libzfs_init(void)
 	int error;
 	char *env;
 
+	// 文件系统载入处理
 	if ((error = libzfs_load_module()) != 0) {
 		errno = error;
 		return (NULL);
@@ -1066,6 +1070,7 @@ libzfs_init(void)
 	libzfs_mnttab_init(hdl);
 	fletcher_4_init();
 
+	// debug log 设置
 	if (getenv("ZFS_PROP_DEBUG") != NULL) {
 		hdl->libzfs_prop_debug = B_TRUE;
 	}

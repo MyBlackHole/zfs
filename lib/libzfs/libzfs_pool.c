@@ -4405,11 +4405,15 @@ zpool_upgrade(zpool_handle_t *zhp, uint64_t new_version)
 	return (0);
 }
 
+/*
+ * 保存命令
+ */
 void
 zfs_save_arguments(int argc, char **argv, char *string, int len)
 {
 	int i;
 
+	// 拷贝 zfs_basename to string
 	(void) strlcpy(string, zfs_basename(argv[0]), len);
 	for (i = 1; i < argc; i++) {
 		(void) strlcat(string, " ", len);
@@ -4417,6 +4421,9 @@ zfs_save_arguments(int argc, char **argv, char *string, int len)
 	}
 }
 
+/*
+ * 写日志
+ */
 int
 zpool_log_history(libzfs_handle_t *hdl, const char *message)
 {

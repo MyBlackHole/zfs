@@ -57,6 +57,7 @@ static __inline__ int
 copyin(const void *from, void *to, size_t len)
 {
 	/* On error copyin routine returns -1 */
+	// 拷贝用户空间到内核空间
 	if (xcopyin(from, to, len))
 		return (-1);
 
@@ -67,6 +68,7 @@ static __inline__ int
 copyout(const void *from, void *to, size_t len)
 {
 	/* On error copyout routine returns -1 */
+	// 拷贝内核空间到用户空间
 	if (xcopyout(from, to, len))
 		return (-1);
 

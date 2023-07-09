@@ -56,6 +56,7 @@ typedef struct mzap_ent_phys {
 	char mze_name[MZAP_NAME_LEN];
 } mzap_ent_phys_t;
 
+// microzap 头部结构体定义
 typedef struct mzap_phys {
 	uint64_t mz_block_type;	/* ZBT_MICRO */
 	uint64_t mz_salt;

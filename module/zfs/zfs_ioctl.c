@@ -247,7 +247,11 @@ uint_t zfs_allow_log_key;
 typedef struct zfs_ioc_vec {
 	zfs_ioc_legacy_func_t	*zvec_legacy_func;
 	zfs_ioc_func_t		*zvec_func;
+	// zfs_ioc_func_t 前调用
+	// 用于检查是否允许操作
 	zfs_secpolicy_func_t	*zvec_secpolicy;
+	// 名检测
+	// 池、数据集
 	zfs_ioc_namecheck_t	zvec_namecheck;
 	boolean_t		zvec_allow_log;
 	zfs_ioc_poolcheck_t	zvec_pool_check;
@@ -1263,6 +1267,8 @@ zfs_secpolicy_change_key(zfs_cmd_t *zc, nvlist_t *innvl, cred_t *cr)
 
 /*
  * Returns the nvlist as specified by the user in the zfs_cmd_t.
+ *
+ * 获取用户空间的 nvlist
  */
 static int
 get_nvlist(uint64_t nvl, uint64_t size, int iflag, nvlist_t **nvp)
@@ -7081,6 +7087,9 @@ zfs_ioctl_register_dataset_modify(zfs_ioc_t ioc, zfs_ioc_legacy_func_t *func,
 	    DATASET_NAME, B_TRUE, POOL_CHECK_SUSPENDED | POOL_CHECK_READONLY);
 }
 
+/*
+ * zfs ioctl 全局 zfs_ioc_vec 数组初始化
+ */
 static void
 zfs_ioctl_init(void)
 {
@@ -7479,6 +7488,7 @@ zfs_check_input_nvpairs(nvlist_t *innvl, const zfs_ioc_vec_t *vec)
 	return (0);
 }
 
+// 数据池状态检查
 static int
 pool_status_check(const char *name, zfs_ioc_namecheck_t type,
     zfs_ioc_poolcheck_t check)
@@ -7494,6 +7504,8 @@ pool_status_check(const char *name, zfs_ioc_namecheck_t type,
 
 	error = spa_open(name, &spa, FTAG);
 	if (error == 0) {
+		// 检查是否启用
+		// 检查是否可写
 		if ((check & POOL_CHECK_SUSPENDED) && spa_suspended(spa))
 			error = SET_ERROR(EAGAIN);
 		else if ((check & POOL_CHECK_READONLY) && !spa_writeable(spa))
@@ -7652,6 +7664,7 @@ zfsdev_state_destroy(void *priv)
 	zs->zs_minor = -1;
 }
 
+// /dev/zfs 所有 ioctl 操作入口
 long
 zfsdev_ioctl_common(uint_t vecnum, zfs_cmd_t *zc, int flag)
 {
@@ -7669,17 +7682,25 @@ zfsdev_ioctl_common(uint_t vecnum, zfs_cmd_t *zc, int flag)
 	if (vecnum >= sizeof (zfs_ioc_vec) / sizeof (zfs_ioc_vec[0]))
 		return (SET_ERROR(ZFS_ERR_IOC_CMD_UNAVAIL));
 
+	// 取对应 ioc_vec
 	vec = &zfs_ioc_vec[vecnum];
 
 	/*
 	 * The registered ioctl list may be sparse, verify that either
 	 * a normal or legacy handler are registered.
+	 *
+	 * 检查是否已注册
+	 * 普通处理函数或者旧处理函数
+	 *
 	 */
 	if (vec->zvec_func == NULL && vec->zvec_legacy_func == NULL)
 		return (SET_ERROR(ZFS_ERR_IOC_CMD_UNAVAIL));
 
 	zc->zc_iflags = flag & FKIOCTL;
+	// 获取最大大小
 	max_nvlist_src_size = zfs_max_nvlist_src_size_os();
+	// 限制用户传递内存
+	// 防止分配使用内核空间没有限制
 	if (zc->zc_nvlist_src_size > max_nvlist_src_size) {
 		/*
 		 * Make sure the user doesn't pass in an insane value for
@@ -7710,6 +7731,7 @@ zfsdev_ioctl_common(uint_t vecnum, zfs_cmd_t *zc, int flag)
 	zc->zc_name[sizeof (zc->zc_name) - 1] = '\0';
 	switch (vec->zvec_namecheck) {
 	case POOL_NAME:
+		// 池名验证
 		if (pool_namecheck(zc->zc_name, NULL, NULL) != 0)
 			error = SET_ERROR(EINVAL);
 		else
@@ -7718,6 +7740,7 @@ zfsdev_ioctl_common(uint_t vecnum, zfs_cmd_t *zc, int flag)
 		break;
 
 	case DATASET_NAME:
+		// 数据集检测
 		if (dataset_namecheck(zc->zc_name, NULL, NULL) != 0)
 			error = SET_ERROR(EINVAL);
 		else
@@ -7726,6 +7749,7 @@ zfsdev_ioctl_common(uint_t vecnum, zfs_cmd_t *zc, int flag)
 		break;
 
 	case ENTITY_NAME:
+		// 实体名检查
 		if (entity_namecheck(zc->zc_name, NULL, NULL) != 0) {
 			error = SET_ERROR(EINVAL);
 		} else {

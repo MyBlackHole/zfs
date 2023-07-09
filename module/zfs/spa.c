@@ -5245,6 +5245,8 @@ spa_load_best(spa_t *spa, spa_load_state_t state, uint64_t max_request,
  * The stats information (gen/count/ustats) is used to gather vdev statistics at
  * the same time open the pool, without having to keep around the spa_t in some
  * ambiguous state.
+ *
+ * 打开或导入 数据池
  */
 static int
 spa_open_common(const char *pool, spa_t **spapp, const void *tag,
@@ -5370,6 +5372,7 @@ spa_open_rewind(const char *name, spa_t **spapp, const void *tag,
 	return (spa_open_common(name, spapp, tag, policy, config));
 }
 
+// 数据池打开
 int
 spa_open(const char *name, spa_t **spapp, const void *tag)
 {

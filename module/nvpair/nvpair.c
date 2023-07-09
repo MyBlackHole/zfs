@@ -583,6 +583,9 @@ nvlist_nv_alloc(int kmflag)
 
 /*
  * nvlist_alloc - Allocate nvlist.
+ *
+ * 分配 nvlist
+ *
  */
 int
 nvlist_alloc(nvlist_t **nvlp, uint_t nvflag, int kmflag)

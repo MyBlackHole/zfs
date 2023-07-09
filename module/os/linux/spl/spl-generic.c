@@ -547,6 +547,7 @@ ddi_copyin(const void *from, void *to, size_t len, int flags)
 {
 	/* Fake ioctl() issued by kernel, 'from' is a kernel address */
 	if (flags & FKIOCTL) {
+		// 内核空间拷贝
 		memcpy(to, from, len);
 		return (0);
 	}
