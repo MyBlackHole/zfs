@@ -697,6 +697,9 @@ zfs_open_bookmarks_cb(zfs_handle_t *zhp, void *data)
  * Opens the given snapshot, bookmark, filesystem, or volume.   The 'types'
  * argument is a mask of acceptable types.  The function will print an
  * appropriate error message and return NULL if it can't be opened.
+ *
+ * 打开给定的快照或文件系统
+ *
  */
 zfs_handle_t *
 zfs_open(libzfs_handle_t *hdl, const char *path, int types)
@@ -725,6 +728,10 @@ zfs_open(libzfs_handle_t *hdl, const char *path, int types)
 		/*
 		 * Try to get stats for the dataset, which will tell us if it
 		 * exists.
+		 *
+		 * 尝试获取数据集的统计数据
+		 * 用以判断数据集是否存在
+		 *
 		 */
 		errno = 0;
 		if ((zhp = make_dataset_handle(hdl, path)) == NULL) {

@@ -1556,6 +1556,7 @@ zvol_os_clear_private(zvol_state_t *zv)
 	}
 }
 
+// 更新卷大小
 int
 zvol_os_update_volsize(zvol_state_t *zv, uint64_t volsize)
 {

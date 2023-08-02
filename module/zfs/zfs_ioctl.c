@@ -2526,6 +2526,7 @@ zfs_prop_set_special(const char *dsname, zprop_source_t source,
 			err = -1;
 		break;
 	case ZFS_PROP_VOLSIZE:
+		// ioctl 更新卷大小入口
 		err = zvol_set_volsize(dsname, intval);
 		break;
 	case ZFS_PROP_SNAPDEV:

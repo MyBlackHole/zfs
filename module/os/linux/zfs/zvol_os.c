@@ -911,24 +911,31 @@ zvol_check_events(struct gendisk *disk, unsigned int clearing)
 static int
 zvol_revalidate_disk(struct gendisk *disk)
 {
+	// 读写锁, 设置只读
 	rw_enter(&zvol_state_lock, RW_READER);
 
 	zvol_state_t *zv = disk->private_data;
 	if (zv != NULL) {
+		// 获取卷自己互斥锁
 		mutex_enter(&zv->zv_state_lock);
+		// 设置卷空间
 		set_capacity(zv->zv_zso->zvo_disk,
 		    zv->zv_volsize >> SECTOR_BITS);
+		// 释放卷自己互斥锁
 		mutex_exit(&zv->zv_state_lock);
 	}
 
+	// 读写锁, 释放
 	rw_exit(&zvol_state_lock);
 
 	return (0);
 }
 
+// 更新卷大小
 int
 zvol_os_update_volsize(zvol_state_t *zv, uint64_t volsize)
 {
+	// 通用设备
 	struct gendisk *disk = zv->zv_zso->zvo_disk;
 
 #if defined(HAVE_REVALIDATE_DISK_SIZE)

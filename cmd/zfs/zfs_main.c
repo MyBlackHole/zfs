@@ -436,6 +436,7 @@ get_usage(zfs_help_t idx)
 	}
 }
 
+// 内存分配失败
 void
 nomem(void)
 {
@@ -511,6 +512,11 @@ usage_prop_cb(int prop, void *cb)
  * Display usage message.  If we're inside a command, display only the usage for
  * that command.  Otherwise, iterate over the entire command table and display
  * a complete usage message.
+ *
+ * 显示使用信息
+ * 如果命令在内部则显示命令用法
+ * 否则迭代显示所有命令
+ *
  */
 static __attribute__((noreturn)) void
 usage(boolean_t requested)
@@ -3422,8 +3428,10 @@ zfs_do_userspace(int argc, char **argv)
  * '-r' is specified.
  */
 typedef struct list_cbdata {
+	// 优先
 	boolean_t	cb_first;
 	boolean_t	cb_literal;
+	// 脚步
 	boolean_t	cb_scripted;
 	zprop_list_t	*cb_proplist;
 } list_cbdata_t;
@@ -3593,6 +3601,9 @@ print_dataset(zfs_handle_t *zhp, list_cbdata_t *cb)
 
 /*
  * Generic callback function to list a dataset or snapshot.
+ *
+ * 用于列出数据集或快照的通用函数
+ *
  */
 static int
 list_callback(zfs_handle_t *zhp, void *data)
@@ -4219,11 +4230,13 @@ static int
 zfs_do_set(int argc, char **argv)
 {
 	nvlist_t *props = NULL;
+	// 第一个 value 的 argv idx
 	int ds_start = -1; /* argv idx of first dataset arg */
 	int ret = 0;
 	int i;
 
 	/* check for options */
+	// 检验格式
 	if (argc > 1 && argv[1][0] == '-') {
 		(void) fprintf(stderr, gettext("invalid option '%c'\n"),
 		    argv[1][1]);
@@ -4231,6 +4244,7 @@ zfs_do_set(int argc, char **argv)
 	}
 
 	/* check number of arguments */
+	// 校验参数数量
 	if (argc < 2) {
 		(void) fprintf(stderr, gettext("missing arguments\n"));
 		usage(B_FALSE);
@@ -4265,6 +4279,8 @@ zfs_do_set(int argc, char **argv)
 	}
 
 	/* Populate a list of property settings */
+	// 分配属性内存
+	// 填充属性
 	if (nvlist_alloc(&props, NV_UNIQUE_NAME, 0) != 0)
 		nomem();
 	for (i = 1; i < ds_start; i++) {

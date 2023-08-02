@@ -302,6 +302,7 @@ zvol_update_volsize(uint64_t volsize, objset_t *os)
  * Set ZFS_PROP_VOLSIZE set entry point.  Note that modifying the volume
  * size will result in a udev "change" event being generated.
  */
+// 多所有系统的统一修改卷大小入口
 int
 zvol_set_volsize(const char *name, uint64_t volsize)
 {
