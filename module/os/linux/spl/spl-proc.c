@@ -655,6 +655,7 @@ static struct ctl_table spl_root[] = {
 	{}
 };
 
+// 初始化 zfs proc
 int
 spl_proc_init(void)
 {
@@ -664,12 +665,14 @@ spl_proc_init(void)
 	if (spl_header == NULL)
 		return (-EUNATCH);
 
+	// 创建 /proc/spl
 	proc_spl = proc_mkdir("spl", NULL);
 	if (proc_spl == NULL) {
 		rc = -EUNATCH;
 		goto out;
 	}
 
+	// 创建 /proc/spl/taskq-all
 	proc_spl_taskq_all = proc_create_data("taskq-all", 0444, proc_spl,
 	    &proc_taskq_all_operations, NULL);
 	if (proc_spl_taskq_all == NULL) {
@@ -677,6 +680,7 @@ spl_proc_init(void)
 		goto out;
 	}
 
+	// 创建 /proc/spl/taskq
 	proc_spl_taskq = proc_create_data("taskq", 0444, proc_spl,
 	    &proc_taskq_operations, NULL);
 	if (proc_spl_taskq == NULL) {
@@ -684,12 +688,14 @@ spl_proc_init(void)
 		goto out;
 	}
 
+	// 创建 /proc/spl/kmem/
 	proc_spl_kmem = proc_mkdir("kmem", proc_spl);
 	if (proc_spl_kmem == NULL) {
 		rc = -EUNATCH;
 		goto out;
 	}
 
+	// 创建 /proc/spl/kmem/slab
 	proc_spl_kmem_slab = proc_create_data("slab", 0444, proc_spl_kmem,
 	    &proc_slab_operations, NULL);
 	if (proc_spl_kmem_slab == NULL) {
@@ -697,6 +703,7 @@ spl_proc_init(void)
 		goto out;
 	}
 
+	// 创建 /proc/spl/kstat/
 	proc_spl_kstat = proc_mkdir("kstat", proc_spl);
 	if (proc_spl_kstat == NULL) {
 		rc = -EUNATCH;
@@ -716,9 +723,11 @@ out:
 	return (rc);
 }
 
+// 撤销 zfs proc
 void
 spl_proc_fini(void)
 {
+	// 清除 /proc/ 下创建的对象
 	remove_proc_entry("kstat", proc_spl);
 	remove_proc_entry("slab", proc_spl_kmem);
 	remove_proc_entry("kmem", proc_spl);

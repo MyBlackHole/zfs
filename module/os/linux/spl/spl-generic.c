@@ -923,7 +923,9 @@ spl_fini(void)
 	spl_random_fini();
 }
 
+// 注册挂载函数
 module_init(spl_init);
+// 注册注销函数
 module_exit(spl_fini);
 
 MODULE_DESCRIPTION("Solaris Porting Layer");
