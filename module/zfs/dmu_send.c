@@ -1105,6 +1105,8 @@ range_alloc(enum type type, uint64_t object, uint64_t start_blkid,
 /*
  * This is the callback function to traverse_dataset that acts as a worker
  * thread for dmu_send_impl.
+ *
+ * 发送回调
  */
 static int
 send_cb(spa_t *spa, zilog_t *zilog, const blkptr_t *bp,
@@ -1240,6 +1242,8 @@ redact_list_cb(redact_block_phys_t *rb, void *arg)
  * This function kicks off the traverse_dataset.  It also handles setting the
  * error code of the thread in case something goes wrong, and pushes the End of
  * Stream record when the traverse_dataset call has finished.
+ *
+ * 遍历发送
  */
 static __attribute__((noreturn)) void
 send_traverse_thread(void *arg)
@@ -1331,6 +1335,7 @@ get_next_range(bqueue_t *bq, struct send_range *prev)
 	return (next);
 }
 
+// 编辑列表线程
 static __attribute__((noreturn)) void
 redact_list_thread(void *arg)
 {
@@ -1917,6 +1922,7 @@ send_reader_thread(void *arg)
 
 #define	NUM_SNAPS_NOT_REDACTED UINT64_MAX
 
+// 数据单元发送属性
 struct dmu_send_params {
 	/* Pool args */
 	const void *tag; // Tag dp was held with, will be used to release dp.
@@ -2075,6 +2081,7 @@ setup_to_thread(struct send_thread_arg *to_arg, objset_t *to_os,
 	if (zfs_send_corrupt_data)
 		to_arg->flags |= TRAVERSE_HARD;
 	to_arg->num_blocks_visited = &dssp->dss_blocks;
+	// 创建发送线程
 	(void) thread_create(NULL, 0, send_traverse_thread, to_arg, 0,
 	    curproc, TS_RUN, minclsyspri);
 }
@@ -2140,6 +2147,7 @@ setup_merge_thread(struct send_merge_thread_arg *smt_arg,
 	    TS_RUN, minclsyspri);
 }
 
+// 启动读者线程
 static void
 setup_reader_thread(struct send_reader_thread_arg *srt_arg,
     struct dmu_send_params *dspp, struct send_merge_thread_arg *smt_arg,
@@ -2544,6 +2552,7 @@ dmu_send_impl(struct dmu_send_params *dspp)
 		goto out;
 	}
 
+	// 发送相关线程启动
 	setup_to_thread(to_arg, os, dssp, fromtxg, dspp->rawok);
 	setup_from_thread(from_arg, from_rl, dssp);
 	setup_redact_list_thread(rlt_arg, dspp, redact_rl, dssp);
@@ -2769,6 +2778,9 @@ dmu_send(const char *tosnap, const char *fromsnap, boolean_t embedok,
 		 * that it doesn't change by owning the dataset.
 		 */
 
+		// 我们正在发送文件系统或卷。
+		// 确保它不会因为拥有数据集而改变。
+
 		if (savedok) {
 			/*
 			 * We are looking for the dataset that represents the
@@ -2934,6 +2946,7 @@ dmu_send(const char *tosnap, const char *fromsnap, boolean_t embedok,
 
 		if (err == 0) {
 			/* dmu_send_impl will call dsl_pool_rele for us. */
+			// 发送
 			err = dmu_send_impl(&dspp);
 		} else {
 			if (dspp.fromredactsnaps)

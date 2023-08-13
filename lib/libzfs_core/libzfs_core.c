@@ -95,8 +95,11 @@
 #define	BIG_PIPE_SIZE (64 * 1024) /* From sys/pipe.h */
 #endif
 
+// /dev/zfs 全局 fd
 static int g_fd = -1;
 static pthread_mutex_t g_lock = PTHREAD_MUTEX_INITIALIZER;
+
+// /dev/zfs 全局 fd 引用次数
 static int g_refcount;
 
 #ifdef ZFS_DEBUG
@@ -140,6 +143,7 @@ libzfs_core_init(void)
 {
 	(void) pthread_mutex_lock(&g_lock);
 	if (g_refcount == 0) {
+		// 全局 fd
 		g_fd = open(ZFS_DEV, O_RDWR|O_CLOEXEC);
 		if (g_fd < 0) {
 			(void) pthread_mutex_unlock(&g_lock);
@@ -254,6 +258,7 @@ lzc_scrub(zfs_ioc_t ioc, const char *name,
 	return (lzc_ioctl(ioc, name, source, resultp));
 }
 
+// 用户层创建接口
 int
 lzc_create(const char *fsname, enum lzc_dataset_type type, nvlist_t *props,
     uint8_t *wkeydata, uint_t wkeylen)
@@ -485,6 +490,8 @@ lzc_exists(const char *dataset)
  * outnvl is unused.
  * It was added to preserve the function signature in case it is
  * needed in the future.
+ *
+ * 用户层同步
  */
 int
 lzc_sync(const char *pool_name, nvlist_t *innvl, nvlist_t **outnvl)
@@ -1575,6 +1582,8 @@ lzc_channel_program(const char *pool, const char *program, uint64_t instrlimit,
  * ZFS_VDEV_TOO_BIG
  * 	One or more top-level vdevs exceed the maximum vdev size
  * 	supported for this feature.
+ * 用户层
+ * 触发创建检查点
  */
 int
 lzc_pool_checkpoint(const char *pool)
@@ -1717,6 +1726,7 @@ lzc_change_key(const char *fsname, uint64_t crypt_cmd, nvlist_t *props,
 	return (error);
 }
 
+// 用户层重新打开数据池
 int
 lzc_reopen(const char *pool_name, boolean_t scrub_restart)
 {

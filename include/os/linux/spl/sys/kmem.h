@@ -46,7 +46,9 @@ extern void kmem_strfree(char *str);
 /*
  * Memory allocation interfaces
  */
+// 会堵塞直到内存可分配为止
 #define	KM_SLEEP	0x0000	/* can block for memory; success guaranteed */
+// 不休眠,无内存时可用时返回 NULL
 #define	KM_NOSLEEP	0x0001	/* cannot block for memory; may fail */
 #define	KM_PUSHPAGE	0x0004	/* can block for memory; may use reserve */
 #define	KM_ZERO		0x1000	/* zero the allocation */

@@ -5372,7 +5372,7 @@ spa_open_rewind(const char *name, spa_t **spapp, const void *tag,
 	return (spa_open_common(name, spapp, tag, policy, config));
 }
 
-// 数据池打开
+// 数据池\快照...打开
 int
 spa_open(const char *name, spa_t **spapp, const void *tag)
 {

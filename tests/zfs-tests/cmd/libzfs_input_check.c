@@ -34,6 +34,7 @@
  */
 
 static boolean_t unexpected_failures;
+// /dev/zfs
 static int zfs_fd;
 static const char *active_test;
 
@@ -324,6 +325,7 @@ test_create(const char *pool)
 	nvlist_t *optional = fnvlist_alloc();
 	nvlist_t *props = fnvlist_alloc();
 
+	// 类型:数据集
 	fnvlist_add_int32(required, "type", DMU_OST_ZFS);
 	fnvlist_add_uint64(props, "recordsize", 8192);
 	fnvlist_add_nvlist(optional, "props", props);
@@ -579,6 +581,7 @@ test_send_space(const char *snapshot1, const char *snapshot2)
 	nvlist_t *optional = fnvlist_alloc();
 
 	fnvlist_add_string(optional, "from", snapshot1);
+	// 设置
 	fnvlist_add_boolean(optional, "largeblockok");
 	fnvlist_add_boolean(optional, "embedok");
 	fnvlist_add_boolean(optional, "compressok");
@@ -836,30 +839,36 @@ zfs_ioc_input_tests(const char *pool)
 	test_pool_discard_checkpoint(pool);
 	test_log_history(pool);
 
+	printf("1\n");
 	test_create(dataset);
 	test_snapshot(pool, snapbase);
 	test_snapshot(pool, snapshot);
 
+	printf("2\n");
 	test_space_snaps(snapshot);
 	test_send_space(snapbase, snapshot);
 	test_send_new(snapshot, tmpfd);
 	test_recv_new(backup, tmpfd);
 
+	printf("3\n");
 	test_bookmark(pool, snapshot, bookmark);
 	test_get_bookmarks(dataset);
 	test_get_bookmark_props(bookmark);
 	test_destroy_bookmarks(pool, bookmark);
 
+	printf("4\n");
 	test_hold(pool, snapshot);
 	test_get_holds(snapshot);
 	test_release(pool, snapshot);
 
+	printf("5\n");
 	test_clone(snapshot, clone);
 	test_snapshot(pool, clonesnap);
 	test_redact(snapshot, clonesnap);
 	zfs_destroy(clonesnap);
 	zfs_destroy(clone);
 
+	printf("6\n");
 	test_rollback(dataset, snapshot);
 	test_destroy_snaps(pool, snapshot);
 	test_destroy_snaps(pool, snapbase);
@@ -867,6 +876,7 @@ zfs_ioc_input_tests(const char *pool)
 	test_remap(dataset);
 	test_channel_program(pool);
 
+	printf("7\n");
 	test_load_key(dataset);
 	test_change_key(dataset);
 	test_unload_key(dataset);

@@ -209,6 +209,7 @@ struct spa {
 	/*
 	 * Fields protected by spa_namespace_lock.
 	 */
+	// 数据池名
 	char		spa_name[ZFS_MAX_DATASET_NAME_LEN];	/* pool name */
 	char		*spa_comment;		/* comment */
 	avl_node_t	spa_avl;		/* node in spa_namespace_avl */
@@ -228,6 +229,7 @@ struct spa {
 	spa_config_source_t spa_config_source;	/* where config comes from? */
 	uint64_t	spa_import_flags;	/* import specific flags */
 	spa_taskqs_t	spa_zio_taskq[ZIO_TYPES][ZIO_TASKQ_TYPES];
+	// 获取 spa 的 dsl
 	dsl_pool_t	*spa_dsl_pool;
 	boolean_t	spa_is_initializing;	/* true while opening pool */
 	boolean_t	spa_is_exporting;	/* true while exporting pool */

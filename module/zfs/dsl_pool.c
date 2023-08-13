@@ -1386,6 +1386,7 @@ dsl_pool_user_release(dsl_pool_t *dp, uint64_t dsobj, const char *tag,
  * ways, e.g. reading the zpl props object.)
  */
 
+// 查找 dsl
 int
 dsl_pool_hold(const char *name, const void *tag, dsl_pool_t **dp)
 {

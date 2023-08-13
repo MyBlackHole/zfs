@@ -45,6 +45,8 @@
  *
  * More wrappers should be added as needed -- for example
  * nvlist_lookup_*_array and nvpair_value_*_array.
+ *
+ * 分配 dict 结构
  */
 
 nvlist_t *
@@ -316,6 +318,7 @@ fnvlist_lookup_nvpair(nvlist_t *nvl, const char *name)
 }
 
 /* returns B_TRUE if the entry exists */
+// 获取 name 布尔值
 boolean_t
 fnvlist_lookup_boolean(const nvlist_t *nvl, const char *name)
 {

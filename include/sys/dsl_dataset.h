@@ -179,12 +179,15 @@ typedef struct dsl_dataset {
 	dmu_buf_t *ds_dbuf;
 	uint64_t ds_object;
 	uint64_t ds_fsid_guid;
+	// 是否快照
 	boolean_t ds_is_snapshot;
 	struct dsl_key_mapping *ds_key_mapping;
 
 	/* only used in syncing context, only valid for non-snapshots: */
+	// 仅用于同步上下文,非快照有效
 	struct dsl_dataset *ds_prev;
 	uint64_t ds_bookmarks_obj;  /* DMU_OTN_ZAP_METADATA */
+	// 标签 avl 树
 	avl_tree_t ds_bookmarks; /* dsl_bookmark_node_t */
 
 	/* has internal locking: */

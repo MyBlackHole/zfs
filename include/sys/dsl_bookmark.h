@@ -32,11 +32,15 @@ extern "C" {
  * On disk zap object.
  */
 typedef struct zfs_bookmark_phys {
+	// 已添加数据集的 guid
 	uint64_t zbm_guid;		/* guid of bookmarked dataset */
+	// 事务组 id
 	uint64_t zbm_creation_txg;	/* birth transaction group */
+	// 标签创建时间
 	uint64_t zbm_creation_time;	/* bookmark creation time */
 
 	/* fields used for redacted send / recv */
+	// 编辑对象
 	uint64_t zbm_redaction_obj;	/* redaction list object */
 	uint64_t zbm_flags;		/* ZBM_FLAG_* */
 

@@ -37,6 +37,7 @@ typedef enum {
 typedef enum {
 	RW_NONE		= 0,
 	RW_WRITER	= 1,
+	// 读
 	RW_READER	= 2
 } krw_t;
 

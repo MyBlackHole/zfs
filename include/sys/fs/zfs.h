@@ -67,7 +67,9 @@ typedef enum {
 typedef enum dmu_objset_type {
 	DMU_OST_NONE,
 	DMU_OST_META,
+	// ZFS_TYPE_FILESYSTEM
 	DMU_OST_ZFS,
+	// ZFS_TYPE_VOLUME
 	DMU_OST_ZVOL,
 	DMU_OST_OTHER,			/* For testing only! */
 	DMU_OST_ANY,			/* Be careful! */
@@ -1407,6 +1409,7 @@ typedef enum zfs_ioc {
 	ZFS_IOC_DATASET_LIST_NEXT,		/* 0x5a14 */
 	ZFS_IOC_SNAPSHOT_LIST_NEXT,		/* 0x5a15 */
 	ZFS_IOC_SET_PROP,			/* 0x5a16 */
+	// 创建(数据集)
 	ZFS_IOC_CREATE,				/* 0x5a17 */
 	ZFS_IOC_DESTROY,			/* 0x5a18 */
 	ZFS_IOC_ROLLBACK,			/* 0x5a19 */
@@ -1419,6 +1422,7 @@ typedef enum zfs_ioc {
 	ZFS_IOC_ERROR_LOG,			/* 0x5a20 */
 	ZFS_IOC_CLEAR,				/* 0x5a21 */
 	ZFS_IOC_PROMOTE,			/* 0x5a22 */
+	// 创建(快照)
 	ZFS_IOC_SNAPSHOT,			/* 0x5a23 */
 	ZFS_IOC_DSOBJ_TO_DSNAME,		/* 0x5a24 */
 	ZFS_IOC_OBJ_TO_PATH,			/* 0x5a25 */

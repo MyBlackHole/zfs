@@ -233,7 +233,7 @@
  * Like spa_vdev_enter/exit, these are convenience wrappers -- the actual
  * locking is, always, based on spa_namespace_lock and spa_config_lock[].
  */
-
+// 全局 spa 命名空间 avl 树
 static avl_tree_t spa_namespace_avl;
 kmutex_t spa_namespace_lock;
 static kcondvar_t spa_namespace_cv;
@@ -596,6 +596,8 @@ spa_config_held(spa_t *spa, int locks, krw_t rw)
 /*
  * Lookup the named spa_t in the AVL tree.  The spa_namespace_lock must be held.
  * Returns NULL if no matching spa_t is found.
+ *
+ * 查找返回 spa
  */
 spa_t *
 spa_lookup(const char *name)
@@ -612,6 +614,9 @@ spa_lookup(const char *name)
 	/*
 	 * If it's a full dataset name, figure out the pool name and
 	 * just use that.
+	 *
+	 * 处理字符
+	 * 遇见 /@# 首个替换 \0
 	 */
 	cp = strpbrk(search.spa_name, "/@#");
 	if (cp != NULL)

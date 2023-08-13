@@ -246,6 +246,7 @@ uint_t zfs_allow_log_key;
 
 typedef struct zfs_ioc_vec {
 	zfs_ioc_legacy_func_t	*zvec_legacy_func;
+	// type 处理函数
 	zfs_ioc_func_t		*zvec_func;
 	// zfs_ioc_func_t 前调用
 	// 用于检查是否允许操作
@@ -1340,6 +1341,7 @@ nvlist_smush(nvlist_t *errors, size_t max)
 	return (0);
 }
 
+// 填充 k/v
 static int
 put_nvlist(zfs_cmd_t *zc, nvlist_t *nvl)
 {
@@ -3998,6 +4000,7 @@ static const zfs_ioc_key_t zfs_keys_pool_checkpoint[] = {
 	/* no nvl keys */
 };
 
+// 触发创建检查点
 static int
 zfs_ioc_pool_checkpoint(const char *poolname, nvlist_t *innvl, nvlist_t *outnvl)
 {
@@ -5855,6 +5858,7 @@ static const zfs_ioc_key_t zfs_keys_pool_reopen[] = {
 	{"scrub_restart",	DATA_TYPE_BOOLEAN_VALUE,	ZK_OPTIONAL},
 };
 
+// 重新打开数据池
 static int
 zfs_ioc_pool_reopen(const char *pool, nvlist_t *innvl, nvlist_t *outnvl)
 {
@@ -6725,6 +6729,8 @@ zfs_ioc_send_space(const char *snapname, nvlist_t *innvl, nvlist_t *outnvl)
 		full_estimate = B_TRUE;
 	} else if (from) {
 		if (strchr(fromname, '#')) {
+			// 是标签
+			// 查找标签
 			error = dsl_bookmark_lookup(dp, fromname, tosnap, &zbm);
 
 			/*
@@ -6752,6 +6758,7 @@ zfs_ioc_send_space(const char *snapname, nvlist_t *innvl, nvlist_t *outnvl)
 				full_estimate = B_TRUE;
 			}
 		} else if (strchr(fromname, '@')) {
+			// 是快照
 			error = dsl_dataset_hold(dp, fromname, FTAG, &fromsnap);
 			if (error != 0) {
 				dsl_dataset_rele(tosnap, FTAG);
@@ -6767,6 +6774,8 @@ zfs_ioc_send_space(const char *snapname, nvlist_t *innvl, nvlist_t *outnvl)
 			/*
 			 * from is not properly formatted as a snapshot or
 			 * bookmark
+			 *
+			 * 格式有问题
 			 */
 			dsl_dataset_rele(tosnap, FTAG);
 			dsl_pool_rele(dp, FTAG);
@@ -7820,6 +7829,7 @@ zfsdev_ioctl_common(uint_t vecnum, zfs_cmd_t *zc, int flag)
 
 		outnvl = fnvlist_alloc();
 		cookie = spl_fstrans_mark();
+		// 执行对应 type 函数
 		error = vec->zvec_func(zc->zc_name, innvl, outnvl);
 		spl_fstrans_unmark(cookie);
 

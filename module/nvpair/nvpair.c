@@ -946,6 +946,8 @@ nvlist_xdup(const nvlist_t *nvl, nvlist_t **nvlp, nv_alloc_t *nva)
 
 /*
  * Remove all with matching name
+ *
+ * 删除 k/v 对
  */
 int
 nvlist_remove_all(nvlist_t *nvl, const char *name)
@@ -966,6 +968,7 @@ nvlist_remove_all(nvlist_t *nvl, const char *name)
 
 /*
  * Remove first one with matching name and type
+ * 删除 k/v 对
  */
 int
 nvlist_remove(nvlist_t *nvl, const char *name, data_type_t type)
@@ -1508,6 +1511,7 @@ nvlist_prev_nvpair(nvlist_t *nvl, const nvpair_t *nvp)
 	return (curr != NULL ? &curr->nvi_nvp : NULL);
 }
 
+// 是否为空
 boolean_t
 nvlist_empty(const nvlist_t *nvl)
 {
@@ -1733,6 +1737,7 @@ nvlist_lookup_double(const nvlist_t *nvl, const char *name, double *val)
 }
 #endif
 
+// 查找 name, 填充 val
 int
 nvlist_lookup_string(const nvlist_t *nvl, const char *name, const char **val)
 {

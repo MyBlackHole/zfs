@@ -243,6 +243,8 @@ avl_nearest(avl_tree_t *tree, avl_index_t where, int direction)
  *	NULL: the value is not in the AVL tree
  *		*where (if not NULL)  is set to indicate the insertion point
  *	"void *"  of the found tree node
+ *
+ * avl 树查询
  */
 void *
 avl_find(avl_tree_t *tree, const void *value, avl_index_t *where)

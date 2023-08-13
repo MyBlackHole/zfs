@@ -65,6 +65,7 @@ typedef enum {
 	ZK_WILDCARDLIST = 1 << 1,	/* one or more unspecified key names */
 } ioc_key_flag_t;
 
+// ioctl 选项 key 定义
 typedef struct zfs_ioc_key {
 	const char	*zkey_name;
 	data_type_t	zkey_type;
