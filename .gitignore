@@ -86,3 +86,4 @@ Makefile.in
 *.orig
 *.tmp
 *.log
+.eggs

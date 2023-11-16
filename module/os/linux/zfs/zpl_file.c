@@ -1284,6 +1284,7 @@ zpl_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 #endif /* CONFIG_COMPAT */
 
 
+// 地址空间操作
 const struct address_space_operations zpl_address_space_operations = {
 #ifdef HAVE_VFS_READPAGES
 	.readpages	= zpl_readpages,
@@ -1306,6 +1307,7 @@ const struct address_space_operations zpl_address_space_operations = {
 #endif
 };
 
+// 文件操作
 const struct file_operations zpl_file_operations = {
 	.open		= zpl_open,
 	.release	= zpl_release,
@@ -1342,6 +1344,7 @@ const struct file_operations zpl_file_operations = {
 #endif
 };
 
+// 目录操作
 const struct file_operations zpl_dir_file_operations = {
 	.llseek		= generic_file_llseek,
 	.read		= generic_read_dir,

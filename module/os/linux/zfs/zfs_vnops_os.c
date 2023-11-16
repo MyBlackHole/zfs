@@ -3623,17 +3623,20 @@ zfs_putpage_async_commit_cb(void *arg)
  * Push a page out to disk, once the page is on stable storage the
  * registered commit callback will be run as notification of completion.
  *
- *	IN:	ip	 - page mapped for inode.
- *		pp	 - page to push (page is locked)
- *		wbc	 - writeback control data
+ *	IN:	ip	 - page mapped for inode. (索引节点映射的页面)
+ *		pp	 - page to push (page is locked) (要推送的页面)
+ *		wbc	 - writeback control data (回写控制数据)
  *		for_sync - does the caller intend to wait synchronously for the
- *			   page writeback to complete?
+ *			   page writeback to complete? (是否同步)
  *
  *	RETURN:	0 if success
  *		error code if failure
  *
  * Timestamps:
  *	ip - ctime|mtime updated
+ *
+ * page 落盘
+ * 完成后通知
  */
 int
 zfs_putpage(struct inode *ip, struct page *pp, struct writeback_control *wbc,
