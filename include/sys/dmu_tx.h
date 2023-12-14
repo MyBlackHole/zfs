@@ -45,6 +45,7 @@ struct dsl_pool;
 struct dnode;
 struct dsl_dir;
 
+// 数据管理单元事务结构
 struct dmu_tx {
 	/*
 	 * No synchronization is needed because a tx can only be handled

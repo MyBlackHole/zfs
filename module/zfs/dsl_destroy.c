@@ -51,6 +51,7 @@
 
 extern int zfs_snapshot_history_enabled;
 
+// 销毁快照检查实现
 int
 dsl_destroy_snapshot_check_impl(dsl_dataset_t *ds, boolean_t defer)
 {
@@ -58,11 +59,15 @@ dsl_destroy_snapshot_check_impl(dsl_dataset_t *ds, boolean_t defer)
 		return (SET_ERROR(EINVAL));
 
 	if (dsl_dataset_long_held(ds))
+		// 设置了保留设置
 		return (SET_ERROR(EBUSY));
 
 	/*
 	 * Only allow deferred destroy on pools that support it.
 	 * NOTE: deferred destroy is only supported on snapshots.
+	 *
+	 * 仅允许在支持它的池上进行延迟销毁。
+	 * 注意：仅快照支持延迟销毁。
 	 */
 	if (defer) {
 		if (spa_version(ds->ds_dir->dd_pool->dp_spa) <
@@ -74,12 +79,15 @@ dsl_destroy_snapshot_check_impl(dsl_dataset_t *ds, boolean_t defer)
 	/*
 	 * If this snapshot has an elevated user reference count,
 	 * we can't destroy it yet.
+	 *
+	 * 引用计数大于 0
 	 */
 	if (ds->ds_userrefs > 0)
 		return (SET_ERROR(EBUSY));
 
 	/*
 	 * Can't delete a branch point.
+	 * 无法删除分支点。
 	 */
 	if (dsl_dataset_phys(ds)->ds_num_children > 1)
 		return (SET_ERROR(EEXIST));
@@ -771,6 +779,7 @@ dsl_destroy_head_check_impl(dsl_dataset_t *ds, int expected_holds)
 	if (ds->ds_is_snapshot)
 		return (SET_ERROR(EINVAL));
 
+	// 判断引用数量
 	if (zfs_refcount_count(&ds->ds_longholds) != expected_holds)
 		return (SET_ERROR(EBUSY));
 
@@ -782,6 +791,8 @@ dsl_destroy_head_check_impl(dsl_dataset_t *ds, int expected_holds)
 	 * Can't delete a head dataset if there are snapshots of it.
 	 * (Except if the only snapshots are from the branch we cloned
 	 * from.)
+	 *
+	 * 有快照无法删除数据集
 	 */
 	if (ds->ds_prev != NULL &&
 	    dsl_dataset_phys(ds->ds_prev)->ds_next_snap_obj == ds->ds_object)

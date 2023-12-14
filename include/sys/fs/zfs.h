@@ -1387,6 +1387,7 @@ typedef enum zfs_ioc {
 #endif
 	ZFS_IOC = ZFS_IOC_FIRST,
 	ZFS_IOC_POOL_CREATE = ZFS_IOC_FIRST,	/* 0x5a00 */
+	// 刪除数据池
 	ZFS_IOC_POOL_DESTROY,			/* 0x5a01 */
 	ZFS_IOC_POOL_IMPORT,			/* 0x5a02 */
 	ZFS_IOC_POOL_EXPORT,			/* 0x5a03 */
@@ -1411,6 +1412,7 @@ typedef enum zfs_ioc {
 	ZFS_IOC_SET_PROP,			/* 0x5a16 */
 	// 创建(数据集)
 	ZFS_IOC_CREATE,				/* 0x5a17 */
+	// 刪除数据集、数据池、快照、标签等
 	ZFS_IOC_DESTROY,			/* 0x5a18 */
 	ZFS_IOC_ROLLBACK,			/* 0x5a19 */
 	ZFS_IOC_RENAME,				/* 0x5a1a */
@@ -1447,6 +1449,7 @@ typedef enum zfs_ioc {
 	ZFS_IOC_OBJ_TO_STATS,			/* 0x5a38 */
 	ZFS_IOC_SPACE_WRITTEN,			/* 0x5a39 */
 	ZFS_IOC_SPACE_SNAPS,			/* 0x5a3a */
+	// 刪除快照等
 	ZFS_IOC_DESTROY_SNAPS,			/* 0x5a3b */
 	ZFS_IOC_POOL_REGUID,			/* 0x5a3c */
 	ZFS_IOC_POOL_REOPEN,			/* 0x5a3d */
@@ -1457,6 +1460,7 @@ typedef enum zfs_ioc {
 	ZFS_IOC_CLONE,				/* 0x5a42 */
 	ZFS_IOC_BOOKMARK,			/* 0x5a43 */
 	ZFS_IOC_GET_BOOKMARKS,			/* 0x5a44 */
+	// 刪除等
 	ZFS_IOC_DESTROY_BOOKMARKS,		/* 0x5a45 */
 	ZFS_IOC_RECV_NEW,			/* 0x5a46 */
 	ZFS_IOC_POOL_SYNC,			/* 0x5a47 */

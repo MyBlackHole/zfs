@@ -321,6 +321,7 @@ zpool_free_handles(libzfs_handle_t *hdl)
 
 /*
  * Utility function to gather stats (objset and zpl) for the given object.
+ * 收集给定对象统计信息（objset 和 zpl）的实用函数。
  */
 static int
 get_stats_ioctl(zfs_handle_t *zhp, zfs_cmd_t *zc)

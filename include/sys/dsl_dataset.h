@@ -230,6 +230,10 @@ typedef struct dsl_dataset {
 	 * ds to remain held even after dropping the dp_config_rwlock.
 	 * Owning counts as a long hold.  See the comments above
 	 * dsl_pool_hold() for details.
+	 * 长时间持有可防止 ds 被摧毁； 他们允许
+	 * 即使在删除 dp_config_rwlock 后，ds 仍保持保留状态。
+	 * 拥有算作长期持有。 请参阅上面的评论
+	 * dsl_pool_hold() 了解详细信息。
 	 */
 	zfs_refcount_t ds_longholds;
 

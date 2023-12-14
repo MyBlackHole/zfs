@@ -60,6 +60,7 @@ dmu_tx_stats_t dmu_tx_stats = {
 
 static kstat_t *dmu_tx_ksp;
 
+// 创建事务
 dmu_tx_t *
 dmu_tx_create_dd(dsl_dir_t *dd)
 {

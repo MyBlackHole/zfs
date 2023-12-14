@@ -919,6 +919,7 @@ dsl_dataset_long_rele(dsl_dataset_t *ds, const void *tag)
 }
 
 /* Return B_TRUE if there are any long holds on this dataset. */
+/* 如果此数据集有任何长期保留，则返回 B_TRUE。 */
 boolean_t
 dsl_dataset_long_held(dsl_dataset_t *ds)
 {

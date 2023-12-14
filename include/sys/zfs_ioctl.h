@@ -482,6 +482,7 @@ typedef enum zfs_case {
  * is automatically added on 64-bit (but not on 32-bit).
  */
 typedef struct zfs_cmd {
+	// 数据池或数据集名
 	char		zc_name[MAXPATHLEN];	/* name of pool or dataset */
 	// 输入数据
 	uint64_t	zc_nvlist_src;		/* really (char *) */

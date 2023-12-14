@@ -2079,6 +2079,7 @@ zfs_ioc_vdev_setfru(zfs_cmd_t *zc)
 	return (error);
 }
 
+// zfs 对象状态获取实现
 static int
 zfs_ioc_objset_stats_impl(zfs_cmd_t *zc, objset_t *os)
 {
@@ -3742,6 +3743,8 @@ zfs_ioc_get_bootenv(const char *name, nvlist_t *innvl, nvlist_t *outnvl)
  *
  * Returns 0 if the argument is not a snapshot, or it is not currently a
  * filesystem, or we were able to unmount it.  Returns error code otherwise.
+ *
+ * 取消快照挂载
  */
 void
 zfs_unmount_snap(const char *snapname)
@@ -4060,6 +4063,7 @@ zfs_ioc_destroy(zfs_cmd_t *zc)
 			 *
 			 * 6 extra bytes for /%recv
 			 */
+			// 拼接数据集子项
 			char namebuf[ZFS_MAX_DATASET_NAME_LEN + 6];
 
 			if (snprintf(namebuf, sizeof (namebuf), "%s/%s",
@@ -4073,8 +4077,10 @@ zfs_ioc_destroy(zfs_cmd_t *zc)
 			 * If the hidden child (%recv) does not exist
 			 * the original error (EEXIST) will be returned
 			 */
+			// 删除数据集子项
 			err = dsl_destroy_head(namebuf);
 			if (err == 0)
+				// 删除数据集
 				err = dsl_destroy_head(zc->zc_name);
 			else if (err == ENOENT)
 				err = SET_ERROR(EEXIST);

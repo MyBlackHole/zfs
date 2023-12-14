@@ -113,10 +113,13 @@ int zfs_expire_snapshot = ZFSCTL_EXPIRE_SNAPSHOT;
 static int zfs_admin_snapshot = 0;
 
 typedef struct {
+	// 全量快照名称
 	char		*se_name;	/* full snapshot name */
+	// 全量挂载路径
 	char		*se_path;	/* full mount path */
 	spa_t		*se_spa;	/* pool spa */
 	uint64_t	se_objsetid;	/* snapshot objset id */
+	// 快照根目录项
 	struct dentry   *se_root_dentry; /* snapshot root dentry */
 	krwlock_t	se_taskqid_lock;  /* scheduled unmount taskqid lock */
 	taskqid_t	se_taskqid;	/* scheduled unmount taskqid */
@@ -1039,6 +1042,8 @@ exportfs_flush(void)
  * There is no assurance that this can or will succeed, is just a
  * best effort.  In the case where it does fail, perhaps because
  * it's in use, the unmount will fail harmlessly.
+ *
+ * 取消快照挂载
  */
 int
 zfsctl_snapshot_unmount(const char *snapname, int flags)
@@ -1062,6 +1067,7 @@ zfsctl_snapshot_unmount(const char *snapname, int flags)
 		argv[4] = "-fn";
 	argv[5] = se->se_path;
 	dprintf("unmount; path=%s\n", se->se_path);
+	// 内核态调用用户态程序
 	error = call_usermodehelper(argv[0], argv, envp, UMH_WAIT_PROC);
 	zfsctl_snapshot_rele(se);
 
@@ -1070,6 +1076,10 @@ zfsctl_snapshot_unmount(const char *snapname, int flags)
 	 * The umount system utility will return 256 on error.  We must
 	 * assume this error is because the file system is busy so it is
 	 * converted to the more sensible EBUSY.
+	 *
+	 * 如果出现错误，umount 系统实用程序将返回 256。 我们必须
+	 * 假设此错误是因为文件系统正忙，所以它是
+	 * 转换为更明智的 EBUSY。
 	 */
 	if (error)
 		error = SET_ERROR(EBUSY);
@@ -1077,6 +1087,7 @@ zfsctl_snapshot_unmount(const char *snapname, int flags)
 	return (error);
 }
 
+ // 挂载快照
 int
 zfsctl_snapshot_mount(struct path *path, int flags)
 {
