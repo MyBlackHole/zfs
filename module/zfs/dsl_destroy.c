@@ -800,6 +800,7 @@ dsl_destroy_head_check_impl(dsl_dataset_t *ds, int expected_holds)
 
 	/*
 	 * Can't delete if there are children of this fs.
+	 * 如果此 fs 有子级，则无法删除。
 	 */
 	error = zap_count(mos,
 	    dsl_dir_phys(ds->ds_dir)->dd_child_dir_zapobj, &count);
