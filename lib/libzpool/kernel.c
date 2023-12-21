@@ -1381,6 +1381,8 @@ zfs_file_fallocate(zfs_file_t *fp, int mode, loff_t offset, loff_t len)
  * fp - pointer to file
  *
  * Returns current file offset.
+ *
+ * 获取文件当前偏移量
  */
 loff_t
 zfs_file_off(zfs_file_t *fp)

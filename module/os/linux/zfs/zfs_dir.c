@@ -1054,6 +1054,7 @@ zfs_link_destroy(zfs_dirlock_t *dl, znode_t *zp, dmu_tx_t *tx, int flag,
 	mutex_enter(&dzp->z_lock);
 	dzp->z_size--;		/* one dirent removed */
 	if (zp_is_dir)
+		// 持有减一
 		drop_nlink(ZTOI(dzp));	/* ".." link from zp */
 	links = ZTOI(dzp)->i_nlink;
 	SA_ADD_BULK_ATTR(bulk, count, SA_ZPL_LINKS(zfsvfs),

@@ -6245,6 +6245,7 @@ zfs_ioc_diff(zfs_cmd_t *zc)
 	if ((fp = zfs_file_get(zc->zc_cookie)) == NULL)
 		return (SET_ERROR(EBADF));
 
+	// fp 管道 (pipe[1] 支持 write)
 	off = zfs_file_off(fp);
 	error = dmu_diff(zc->zc_name, zc->zc_value, fp, &off);
 

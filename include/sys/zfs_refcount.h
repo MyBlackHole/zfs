@@ -39,6 +39,11 @@ extern "C" {
  * particular object, use FTAG (which is a string) for the holder_tag.
  * Otherwise, use the object that holds the reference.
  */
+/*
+ * 如果引用仅由调用函数而不是任何函数持有
+ * 特定对象，使用 FTAG（这是一个字符串）作为holder_tag。
+ * 否则，使用保存引用的对象。
+ */
 #define	FTAG ((char *)(uintptr_t)__func__)
 
 #ifdef	ZFS_DEBUG

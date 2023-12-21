@@ -689,6 +689,7 @@ traverse_impl(spa_t *spa, dsl_dataset_t *ds, uint64_t objset, blkptr_t *rootbp,
 				goto out;
 		} else {
 			osp = buf->b_data;
+			// 遍历日志 ?
 			traverse_zil(td, &osp->os_zil_header);
 			arc_buf_destroy(buf, &buf);
 		}
@@ -731,6 +732,7 @@ traverse_dataset_resume(dsl_dataset_t *ds, uint64_t txg_start,
 	    &dsl_dataset_phys(ds)->ds_bp, txg_start, resume, flags, func, arg));
 }
 
+// 遍历数据集
 int
 traverse_dataset(dsl_dataset_t *ds, uint64_t txg_start,
     int flags, blkptr_cb_t func, void *arg)

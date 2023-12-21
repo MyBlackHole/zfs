@@ -86,6 +86,7 @@ static uint64_t ratelimit_dropped = 0;
 static uint64_t zevent_eid = 0;
 
 static kmutex_t zevent_lock;
+// 全局事件列表
 static list_t zevent_list;
 static kcondvar_t zevent_cv;
 #endif /* _KERNEL */

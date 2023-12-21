@@ -50,6 +50,7 @@ typedef struct dmu_diffarg {
 	dmu_diff_record_t da_ddr;
 } dmu_diffarg_t;
 
+// 写入比较记录
 static int
 write_record(dmu_diffarg_t *da)
 {
@@ -174,20 +175,24 @@ dmu_diff(const char *tosnap_name, const char *fromsnap_name,
 	int error;
 	uint64_t fromtxg;
 
+	// 必须是快照
 	if (strchr(tosnap_name, '@') == NULL ||
 	    strchr(fromsnap_name, '@') == NULL)
 		return (SET_ERROR(EINVAL));
 
+	// 查询持有数据池
 	error = dsl_pool_hold(tosnap_name, FTAG, &dp);
 	if (error != 0)
 		return (error);
 
+	// 查询持有数据集或快照
 	error = dsl_dataset_hold(dp, tosnap_name, FTAG, &tosnap);
 	if (error != 0) {
 		dsl_pool_rele(dp, FTAG);
 		return (error);
 	}
 
+	// 查询持有数据集或快照
 	error = dsl_dataset_hold(dp, fromsnap_name, FTAG, &fromsnap);
 	if (error != 0) {
 		dsl_dataset_rele(tosnap, FTAG);
@@ -196,19 +201,28 @@ dmu_diff(const char *tosnap_name, const char *fromsnap_name,
 	}
 
 	if (!dsl_dataset_is_before(tosnap, fromsnap, 0)) {
+		// tosnap 在 fromsnap 之前(不支持)
+		// 释放数据集持有
 		dsl_dataset_rele(fromsnap, FTAG);
 		dsl_dataset_rele(tosnap, FTAG);
+		// 释放数据池持有
 		dsl_pool_rele(dp, FTAG);
 		return (SET_ERROR(EXDEV));
 	}
 
+	// 获取事务组 id
 	fromtxg = dsl_dataset_phys(fromsnap)->ds_creation_txg;
+	// 有事务组 id, 就够了，释放数据集持有
 	dsl_dataset_rele(fromsnap, FTAG);
 
+	// 设置长时间持有
 	dsl_dataset_long_hold(tosnap, FTAG);
+	// 可以释放数据池了
 	dsl_pool_rele(dp, FTAG);
 
+	// fp 写
 	da.da_fp = fp;
+	// fp 偏移
 	da.da_offp = offp;
 	da.da_ddr.ddr_type = DDR_NONE;
 	da.da_ddr.ddr_first = da.da_ddr.ddr_last = 0;
@@ -233,6 +247,7 @@ dmu_diff(const char *tosnap_name, const char *fromsnap_name,
 		(void) write_record(&da);
 	}
 
+	// 释放持资源
 	dsl_dataset_long_rele(tosnap, FTAG);
 	dsl_dataset_rele(tosnap, FTAG);
 

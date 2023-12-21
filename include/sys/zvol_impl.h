@@ -45,6 +45,7 @@ typedef struct zvol_state {
 	objset_t		*zv_objset;	/* objset handle */
 	uint32_t		zv_flags;	/* ZVOL_* flags */
 	uint32_t		zv_open_count;	/* open counts */
+	// 磁盘修改
 	uint32_t		zv_changed;	/* disk changed */
 	uint32_t		zv_volmode;	/* volmode */
 	zilog_t			*zv_zilog;	/* ZIL handle */

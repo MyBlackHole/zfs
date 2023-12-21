@@ -144,6 +144,7 @@ typedef struct dsl_dataset_phys {
 	uint64_t ds_snapnames_zapobj;	/* DMU_OT_DSL_DS_SNAP_MAP 0 for snaps */
 	uint64_t ds_num_children;	/* clone/snap children; ==0 for head */
 	uint64_t ds_creation_time;	/* seconds since 1970 */
+	// 创建的事务组 id
 	uint64_t ds_creation_txg;
 	uint64_t ds_deadlist_obj;	/* DMU_OT_DEADLIST */
 	/*
@@ -273,6 +274,7 @@ typedef struct dsl_dataset {
 	void *ds_feature_activation[SPA_FEATURES];
 
 	/* Protected by ds_lock; keep at end of struct for better locality */
+	// 快照名
 	char ds_snapname[ZFS_MAX_DATASET_NAME_LEN];
 } dsl_dataset_t;
 
