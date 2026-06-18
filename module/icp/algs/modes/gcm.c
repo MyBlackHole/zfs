@@ -629,65 +629,71 @@ gcm_init_ctx(gcm_ctx_t *gcm_ctx, char *param,
 	size_t aad_len = gcm_param->ulAADLen;
 
 #ifdef CAN_USE_GCM_ASM
-	boolean_t needs_bswap =
-	    ((aes_key_t *)gcm_ctx->gcm_keysched)->ops->needs_byteswap;
-
-	if (GCM_IMPL_READ(icp_gcm_impl) != IMPL_CYCLE) {
-		gcm_ctx->impl = GCM_IMPL_USED;
-	} else {
-		/*
-		 * Handle the "cycle" implementation by creating different
-		 * contexts, one per implementation.
-		 */
-		gcm_ctx->impl = gcm_toggle_impl();
-
-		/* The AVX impl. doesn't handle byte swapped key schedules. */
-		if (needs_bswap == B_TRUE) {
-			gcm_ctx->impl = GCM_IMPL_GENERIC;
-		}
-		/*
-		 * If this is an AVX context, use the MOVBE and the BSWAP
-		 * variants alternately.
-		 */
-		if (gcm_ctx->impl == GCM_IMPL_AVX &&
-		    zfs_movbe_available() == B_TRUE) {
-			(void) atomic_toggle_boolean_nv(
-			    (volatile boolean_t *)&gcm_avx_can_use_movbe);
-		}
-	}
-	/*
-	 * We don't handle byte swapped key schedules in the avx code path,
-	 * still they could be created by the aes generic implementation.
-	 * Make sure not to use them since we'll corrupt data if we do.
-	 */
-	if (gcm_ctx->impl != GCM_IMPL_GENERIC && needs_bswap == B_TRUE) {
+	if (gcm_ctx->gcm_flags & GCM_USE_GENERIC) {
 		gcm_ctx->impl = GCM_IMPL_GENERIC;
+	} else {
+		boolean_t needs_bswap =
+		    ((aes_key_t *)gcm_ctx->gcm_keysched)->ops->needs_byteswap;
 
-		cmn_err_once(CE_WARN,
-		    "ICP: Can't use the aes generic or cycle implementations "
-		    "in combination with the gcm avx or avx2-vaes "
-		    "implementation!");
-		cmn_err_once(CE_WARN,
-		    "ICP: Falling back to a compatible implementation, "
-		    "aes-gcm performance will likely be degraded.");
-		cmn_err_once(CE_WARN,
-		    "ICP: Choose at least the x86_64 aes implementation to "
-		    "restore performance.");
+		if (GCM_IMPL_READ(icp_gcm_impl) != IMPL_CYCLE) {
+			gcm_ctx->impl = GCM_IMPL_USED;
+		} else {
+			/*
+			 * Handle the "cycle" implementation by creating
+			 * different contexts, one per implementation.
+			 */
+			gcm_ctx->impl = gcm_toggle_impl();
+
+			/* The AVX impl. doesn't handle byte swapped
+			 * key schedules. */
+			if (needs_bswap == B_TRUE) {
+				gcm_ctx->impl = GCM_IMPL_GENERIC;
+			}
+			/*
+			 * If this is an AVX context, use the MOVBE and
+			 * the BSWAP variants alternately.
+			 */
+			if (gcm_ctx->impl == GCM_IMPL_AVX &&
+			    zfs_movbe_available() == B_TRUE) {
+				(void) atomic_toggle_boolean_nv(
+				    (volatile boolean_t *)
+				    &gcm_avx_can_use_movbe);
+			}
+		}
+		/*
+		 * We don't handle byte swapped key schedules in the avx
+		 * code path, still they could be created by the aes
+		 * generic implementation.  Make sure not to use them
+		 * since we'll corrupt data if we do.
+		 */
+		if (gcm_ctx->impl != GCM_IMPL_GENERIC &&
+		    needs_bswap == B_TRUE) {
+			gcm_ctx->impl = GCM_IMPL_GENERIC;
+
+			cmn_err_once(CE_WARN,
+			    "ICP: Can't use the aes generic or cycle "
+			    "implementations in combination with the "
+			    "gcm avx or avx2-vaes implementation!");
+			cmn_err_once(CE_WARN,
+			    "ICP: Falling back to a compatible "
+			    "implementation, aes-gcm performance will "
+			    "likely be degraded.");
+			cmn_err_once(CE_WARN,
+			    "ICP: Choose at least the x86_64 aes "
+			    "implementation to restore performance.");
+		}
 	}
 
-	/*
-	 * AVX implementations use Htable with sizes depending on
-	 * implementation.
-	 */
 	if (gcm_ctx->impl != GCM_IMPL_GENERIC) {
 		rv = gcm_init_avx(gcm_ctx, iv, iv_len, aad, aad_len,
 		    block_size);
-	}
-	else
+	} else
 #endif /* ifdef CAN_USE_GCM_ASM */
-	if (gcm_init(gcm_ctx, iv, iv_len, aad, aad_len, block_size,
-	    encrypt_block, copy_block, xor_block) != CRYPTO_SUCCESS) {
-		rv = CRYPTO_MECHANISM_PARAM_INVALID;
+	{
+		if (gcm_init(gcm_ctx, iv, iv_len, aad, aad_len, block_size,
+		    encrypt_block, copy_block, xor_block) != CRYPTO_SUCCESS) {
+			rv = CRYPTO_MECHANISM_PARAM_INVALID;
+		}
 	}
 
 	return (rv);

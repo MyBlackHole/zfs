@@ -105,10 +105,14 @@
  * ZFS Makefiles.
  */
 
+extern int sm4_mod_init(void);
+extern int sm4_mod_fini(void);
+
 void
 icp_fini(void)
 {
 	sha2_mod_fini();
+	sm4_mod_fini();
 	aes_mod_fini();
 	kcf_sched_destroy();
 	kcf_prov_tab_destroy();
@@ -133,6 +137,7 @@ icp_init(void)
 
 	/* initialize algorithms */
 	aes_mod_init();
+	sm4_mod_init();
 	sha2_mod_init();
 
 	return (0);

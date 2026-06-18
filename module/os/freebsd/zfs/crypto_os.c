@@ -269,6 +269,19 @@ freebsd_crypt_newsession(freebsd_crypt_session_t *sessp,
 	csp.csp_cipher_klen = key->ck_length / 8;
 	switch (c_info->ci_crypt_type) {
 		case ZC_TYPE_GCM:
+		/*
+		 * SM4-GCM is not supported via FreeBSD's OCF on versions
+		 * prior to 14.  On FreeBSD 14+ the kernel defines
+		 * CRYPTO_SM4_GCM in <opencrypto/cryptodev.h> and could be
+		 * wired here.  For now return ENOTSUP so callers fail
+		 * loudly rather than silently routing SM4 data through
+		 * AES-GCM and corrupting it.
+		 */
+		if (c_info->ci_mechname != NULL &&
+		    strcmp(c_info->ci_mechname, SUN_CKM_SM4_GCM) == 0) {
+			error = ENOTSUP;
+			goto bad;
+		}
 		csp.csp_cipher_alg = CRYPTO_AES_NIST_GCM_16;
 		csp.csp_ivlen = AES_GCM_IV_LEN;
 		switch (key->ck_length/8) {

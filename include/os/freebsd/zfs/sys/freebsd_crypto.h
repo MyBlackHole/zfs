@@ -41,6 +41,7 @@
 
 #define	SUN_CKM_AES_CCM	"CKM_AES_CCM"
 #define	SUN_CKM_AES_GCM	"CKM_AES_GCM"
+#define	SUN_CKM_SM4_GCM	"CKM_SM4_GCM"
 #define	SUN_CKM_SHA512_HMAC	"CKM_SHA512_HMAC"
 
 #define	CRYPTO_BITS2BYTES(n) ((n) == 0 ? 0 : (((n) - 1) >> 3) + 1)

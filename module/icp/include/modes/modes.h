@@ -48,6 +48,7 @@ extern boolean_t gcm_avx_can_use_movbe;
 
 #define	CCM_MODE			0x00000010
 #define	GCM_MODE			0x00000020
+#define	GCM_USE_GENERIC			0x00000040
 
 /*
  * cc_keysched:		Pointer to key schedule.

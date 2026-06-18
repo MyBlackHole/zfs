@@ -165,6 +165,16 @@ qat_init_crypt_session_ctx(qat_encrypt_dir_t dir, CpaInstanceHandle inst_handle,
 
 	if (zio_crypt_table[crypt].ci_crypt_type == ZC_TYPE_CCM) {
 		return (CPA_STATUS_FAIL);
+	} else if (zio_crypt_table[crypt].ci_mechname != NULL &&
+	    strcmp(zio_crypt_table[crypt].ci_mechname,
+	    SUN_CKM_SM4_GCM) == 0) {
+		/*
+		 * SM4-GCM is not supported by QAT hardware. Fall back to the
+		 * software implementation. Without this check, QAT would
+		 * erroneously use AES-GCM to process SM4-GCM requests,
+		 * causing silent data corruption.
+		 */
+		return (CPA_STATUS_FAIL);
 	} else {
 		ciper_algorithm = CPA_CY_SYM_CIPHER_AES_GCM;
 		hash_algorithm = CPA_CY_SYM_HASH_AES_GCM;

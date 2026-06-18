@@ -94,6 +94,7 @@ spl-objs += $(addprefix os/linux/spl/,$(SPL_OBJS))
 zfs-objs += avl/avl.o
 
 ICP_OBJS := \
+	algs/sm4/sm4_impl.o \
 	algs/aes/aes_impl.o \
 	algs/aes/aes_impl_generic.o \
 	algs/aes/aes_modes.o \
@@ -121,6 +122,7 @@ ICP_OBJS := \
 	core/kcf_sched.o \
 	illumos-crypto.o \
 	io/aes.o \
+	io/sm4.o \
 	io/sha2_mod.o \
 	spi/kcf_spi.o
 

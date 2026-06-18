@@ -13,6 +13,8 @@ nodist_libicp_la_SOURCES = \
 	module/icp/algs/aes/aes_impl_x86-64.c \
 	module/icp/algs/aes/aes_impl.c \
 	module/icp/algs/aes/aes_modes.c \
+	module/icp/algs/sm4/sm4_impl.c \
+	module/icp/io/sm4.c \
 	module/icp/algs/blake3/blake3.c \
 	module/icp/algs/blake3/blake3_generic.c \
 	module/icp/algs/blake3/blake3_impl.c \

@@ -203,7 +203,8 @@ const zio_crypt_info_t zio_crypt_table[ZIO_CRYPT_FUNCTIONS] = {
 	{SUN_CKM_AES_CCM,	ZC_TYPE_CCM,	32,	"aes-256-ccm"},
 	{SUN_CKM_AES_GCM,	ZC_TYPE_GCM,	16,	"aes-128-gcm"},
 	{SUN_CKM_AES_GCM,	ZC_TYPE_GCM,	24,	"aes-192-gcm"},
-	{SUN_CKM_AES_GCM,	ZC_TYPE_GCM,	32,	"aes-256-gcm"}
+	{SUN_CKM_AES_GCM,	ZC_TYPE_GCM,	32,	"aes-256-gcm"},
+	{SUN_CKM_SM4_GCM,	ZC_TYPE_GCM,	16,	"sm4-gcm"}
 };
 
 static void
@@ -485,8 +486,8 @@ zio_crypt_key_wrap(crypto_key_t *cwkey, zio_crypt_key_t *key, uint8_t *iv,
 	zfs_uio_segflg(&cuio) = UIO_SYSSPACE;
 
 	/* encrypt the keys and store the resulting ciphertext and mac */
-	ret = zio_do_crypt_uio_opencrypto(B_TRUE, NULL, crypt, cwkey,
-	    iv, enc_len, &cuio, aad_len);
+	ret = zio_do_crypt_uio_opencrypto(B_TRUE, NULL, ZIO_CRYPT_AES_256_CCM,
+	    cwkey, iv, enc_len, &cuio, aad_len);
 	if (ret != 0)
 		goto error;
 
@@ -562,8 +563,8 @@ zio_crypt_key_unwrap(crypto_key_t *cwkey, uint64_t crypt, uint64_t version,
 	zfs_uio_segflg(&cuio) = UIO_SYSSPACE;
 
 	/* decrypt the keys and store the result in the output buffers */
-	ret = zio_do_crypt_uio_opencrypto(B_FALSE, NULL, crypt, cwkey,
-	    iv, enc_len, &cuio, aad_len);
+	ret = zio_do_crypt_uio_opencrypto(B_FALSE, NULL, ZIO_CRYPT_AES_256_CCM,
+	    cwkey, iv, enc_len, &cuio, aad_len);
 
 	if (ret != 0)
 		goto error;
